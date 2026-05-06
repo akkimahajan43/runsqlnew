@@ -1,0 +1,18 @@
+[
+    {
+        "query": "SELECT * FROM users;",
+        "time": "2026-05-06 18:56:02"
+    },
+    {
+        "query": "select distinct name from users",
+        "time": "2026-05-06 18:54:31"
+    },
+    {
+        "query": "SELECT * FROM users;",
+        "time": "2026-05-06 18:54:22"
+    },
+    {
+        "query": "SELECT * FROM users;",
+        "time": "2026-05-06 18:51:20"
+    }
+]
