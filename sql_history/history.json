@@ -1,18 +1,22 @@
 [
     {
-        "query": "SELECT * FROM users;",
-        "time": "2026-05-06 18:56:02"
+        "query": "SELECT o.order_id, c.customer_id, c.customer_name, o.order_amount FROM orders o JOIN customers c ON o.customer_id = c.customer_id LEFT JOIN payments p ON o.order_id = p.order_id WHERE p.payment_id IS NULL",
+        "time": "2026-06-08 14:58:29"
     },
     {
-        "query": "select distinct name from users",
-        "time": "2026-05-06 18:54:31"
+        "query": "SELECT p.payment_id, p.order_id FROM payments p LEFT JOIN orders o ON p.order_id = o.order_id WHERE o.order_id IS NULL",
+        "time": "2026-06-08 14:58:29"
     },
     {
-        "query": "SELECT * FROM users;",
-        "time": "2026-05-06 18:54:22"
+        "query": "SELECT p.payment_id, o.order_id, c.customer_id, c.customer_name, p.payment_amount, o.order_amount FROM payments p JOIN orders o ON p.order_id = o.order_id JOIN customers c ON o.customer_id = c.customer_id WHERE p.payment_amount < o.order_amount AND p.payment_status = 'SUCCESS'",
+        "time": "2026-06-08 14:58:29"
     },
     {
-        "query": "SELECT * FROM users;",
-        "time": "2026-05-06 18:51:20"
+        "query": "SELECT p.payment_id, o.order_id, c.customer_id, c.customer_name, p.payment_amount, o.order_amount FROM payments p JOIN orders o ON p.order_id = o.order_id JOIN customers c ON o.customer_id = c.customer_id WHERE p.payment_amount > o.order_amount",
+        "time": "2026-06-08 14:58:29"
+    },
+    {
+        "query": "SELECT p.payment_id, o.order_id, c.customer_id, c.customer_name, p.payment_amount, p.payment_status FROM payments p JOIN orders o ON p.order_id = o.order_id JOIN customers c ON o.customer_id = c.customer_id WHERE p.payment_status = 'FAILED'",
+        "time": "2026-06-08 14:58:29"
     }
 ]
