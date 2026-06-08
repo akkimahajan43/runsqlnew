@@ -847,78 +847,130 @@ if run_query:
 
     try:
 
-        if not is_safe_query(query):
+        start_time = time.time()
 
-            st.error(
-                "Dangerous query blocked!"
+        queries = [
+            q.strip()
+            for q in query.split(";")
+            if q.strip()
+        ]
+
+        if len(queries) == 0:
+
+            st.warning(
+                "Please enter a query."
             )
 
         else:
 
-            start_time = time.time()
-
-            cursor.execute(query)
-
-            if cursor.description:
-
-                data = cursor.fetchall()
-
-                columns = [
-                    desc[0]
-                    for desc in cursor.description
+            tabs = st.tabs(
+                [
+                    f"Query-{i + 1}"
+                    for i in range(len(queries))
                 ]
-
-                df = pd.DataFrame(
-                    data,
-                    columns=columns
-                )
-
-                gb = GridOptionsBuilder.from_dataframe(df)
-
-                gb.configure_default_column(
-                    resizable=True,
-                    filter=True,
-                    sortable=True
-                )
-
-                grid_options = gb.build()
-
-                AgGrid(
-                    df,
-                    gridOptions=grid_options,
-                    height=400,
-                    width='100%',
-                    columns_auto_size_mode="FIT_CONTENTS"
-                )
-
-            else:
-
-                conn.commit()
-
-                st.success(
-                    "Query executed successfully!"
-                )
-
-            end_time = time.time()
-
-            execution_time = round(
-                end_time - start_time,
-                4
             )
 
-            clean_query = query.replace("\r", "").strip()
-            save_history(clean_query)
+            for i, sql in enumerate(queries):
 
-            st.success(
-                f"""
-                Execution Time:
-                {execution_time} sec
-                """
-            )
+                with tabs[i]:
+
+                    # =====================================
+                    # SAFETY CHECK
+                    # =====================================
+                    if not is_safe_query(sql):
+
+                        st.error(
+                            f"Dangerous query blocked:\n{sql}"
+                        )
+
+                        continue
+
+                    # =====================================
+                    # FORMATTED SQL
+                    # =====================================
+                    formatted_sql = sqlparse.format(
+                        sql,
+                        reindent=True,
+                        keyword_case="upper"
+                    )
+
+                    st.code(
+                        formatted_sql,
+                        language="sql"
+                    )
+                    # =====================================
+                    # EXECUTE QUERY
+                    # =====================================
+                    cursor.execute(sql)
+
+                    if cursor.description:
+
+                        data = cursor.fetchall()
+
+                        columns = [
+                            desc[0]
+                            for desc in cursor.description
+                        ]
+
+                        df = pd.DataFrame(
+                            data,
+                            columns=columns
+                        )
+
+                        gb = GridOptionsBuilder.from_dataframe(df)
+
+                        gb.configure_default_column(
+                            resizable=True,
+                            filter=True,
+                            sortable=True
+                        )
+
+                        grid_options = gb.build()
+
+                        AgGrid(
+                            df,
+                            gridOptions=grid_options,
+                            height=400,
+                            width="100%",
+                            columns_auto_size_mode="FIT_CONTENTS"
+                        )
+
+                    else:
+
+                        conn.commit()
+
+                        st.success(
+                            "Query executed successfully!"
+                        )
+
+        end_time = time.time()
+
+        execution_time = round(
+            end_time - start_time,
+            4
+        )
+
+        clean_query = query.replace(
+            "\r",
+            ""
+        ).strip()
+
+        save_history(
+            clean_query
+        )
+
+        st.success(
+            f"""
+            Execution Time:
+            {execution_time} sec
+            """
+        )
 
     except Exception as e:
 
-        st.error(f"Error: {str(e)}")
+        st.error(
+            f"Error: {str(e)}"
+        )
 # =========================================================
 # CLOSE CONNECTION
 # =========================================================

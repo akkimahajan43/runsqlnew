@@ -1,5 +1,25 @@
 [
     {
+        "query": "--Query-1\nSELECT * FROM customers;\n--Query-2\nSELECT * FROM orders;\n--Query-3\nSELECT * FROM payments;",
+        "time": "2026-06-08 16:40:37"
+    },
+    {
+        "query": "--Query-1\nSELECT * FROM customers;\n--Query-2\nSELECT * FROM orders;\n--Query-3\nSELECT * FROM payments;",
+        "time": "2026-06-08 16:39:55"
+    },
+    {
+        "query": "SELECT * FROM customers;\n\nSELECT * FROM orders;\n\nSELECT * FROM payments;",
+        "time": "2026-06-08 16:39:28"
+    },
+    {
+        "query": "SELECT * FROM customers;\nSELECT c.customer_id FROM orders o left join customers c on o.customer_id=c.customer_id;",
+        "time": "2026-06-08 16:34:04"
+    },
+    {
+        "query": "SELECT * FROM customers;\nSELECT * FROM orders;",
+        "time": "2026-06-08 16:31:51"
+    },
+    {
         "query": "SELECT o.order_id, c.customer_id, c.customer_name, o.order_amount FROM orders o JOIN customers c ON o.customer_id = c.customer_id LEFT JOIN payments p ON o.order_id = p.order_id WHERE p.payment_id IS NULL",
         "time": "2026-06-08 14:58:29"
     },
