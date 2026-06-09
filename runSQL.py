@@ -2,12 +2,15 @@ import os
 import json
 import time
 import httpx
+import pyodbc
 import sqlite3
+import openpyxl
 import sqlparse
+import sqlalchemy
 import pandas as pd
 from groq import Groq
-from io import BytesIO
 import streamlit as st
+from io import BytesIO
 from datetime import datetime
 from dotenv import load_dotenv
 from streamlit_ace import st_ace
@@ -581,7 +584,7 @@ Examples:
                             <div style="
                             padding:15px;
                             border-radius:10px;
-                            background:#DCFCE7;
+                            background:linear-gradient(90deg,#16A34A,#22C55E);
                             border-left:6px solid green;">
                             <h3>✅ PASS</h3>
                             No violating records found
@@ -593,7 +596,7 @@ Examples:
                             <div style="
                             padding:15px;
                             border-radius:10px;
-                            background:#FEE2E2;
+                            background:linear-gradient(90deg,#B91C1C,#EF4444);
                             border-left:6px solid red;">
                             <h3>❌ FAIL</h3>
                             {len(df)} violating record(s) found
