@@ -6,7 +6,7 @@ from io import BytesIO
 from datetime import datetime
 
 import httpx
-import openpyxl
+import openpyxl as px
 import pandas as pd
 import pyodbc
 import sqlalchemy
