@@ -282,6 +282,9 @@ def create_chart(df):
     if df.empty or len(df.columns) < 2:
         return None
 
+    # Force localized reference to prevent openpyxl conflict bugs
+    import plotly.express as safe_px
+
     cols = df.columns.tolist()
     numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
 
@@ -314,7 +317,7 @@ def create_chart(df):
     clean_y = str(y_axis).replace("_", " ").title()
 
     if "date" in str(x_axis).lower():
-        fig = px.line(
+        fig = safe_px.line(
             df,
             x=x_axis,
             y=y_axis,
@@ -322,7 +325,7 @@ def create_chart(df):
             markers=True
         )
     else:
-        fig = px.bar(
+        fig = safe_px.bar(
             df,
             x=x_axis,
             y=y_axis,
@@ -420,7 +423,7 @@ for item in history_log:
         st.code(item["query"], language="sql")
 
 # =========================================================
-# PAGE 1: SHOW SAMPLE DATA (PERSISTED)
+# PAGE 1: SHOW SAMPLE DATA (PERSISTED - FIXED LAG)
 # =========================================================
 
 if page == "🛢️ Table List":
@@ -438,12 +441,18 @@ if page == "🛢️ Table List":
     if all_tables:
         options = ["-- Select a Table --"] + all_tables
 
+        # Sync the index position instantly based on current session_state
         default_idx = 0
         if st.session_state.selected_table_tab in options:
             default_idx = options.index(st.session_state.selected_table_tab)
 
-        selected_table = st.selectbox("Choose a Table to View Data", options, index=default_idx)
-        st.session_state.selected_table_tab = selected_table
+        # FIX: Directly mapping the key parameter forces instant single-click rendering
+        selected_table = st.selectbox(
+            "Choose a Table to View Data",
+            options,
+            index=default_idx,
+            key="selected_table_tab"
+        )
 
         if selected_table != "-- Select a Table --":
             st.subheader(f"📋 Table: {selected_table}")
