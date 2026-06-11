@@ -74,15 +74,7 @@ margin-bottom:20px;">
 # =========================================================
 
 DB_FOLDER = "databases"
-HISTORY_FOLDER = "sql_history"
-
 os.makedirs(DB_FOLDER, exist_ok=True)
-os.makedirs(HISTORY_FOLDER, exist_ok=True)
-
-HISTORY_FILE = os.path.join(
-    HISTORY_FOLDER,
-    "history.json"
-)
 
 # =========================================================
 # CREATE DEFAULT DATABASE
@@ -177,24 +169,6 @@ if not os.path.exists(default_db):
 # =========================================================
 # HELPER UTILITIES & BACKEND LOGIC
 # =========================================================
-
-def load_history():
-    if os.path.exists(HISTORY_FILE):
-        with open(HISTORY_FILE, "r") as f:
-            return json.load(f)
-    return []
-
-
-def save_history(query):
-    history = load_history()
-    history.insert(0, {
-        "query": query,
-        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    })
-    history = history[:20]
-    with open(HISTORY_FILE, "w") as f:
-        json.dump(history, f, indent=4)
-
 
 def get_schema(cursor):
     schema_text = ""
@@ -345,7 +319,6 @@ def create_chart(df):
 # SIDEBAR NAVIGATION & CONFIG
 # =========================================================
 
-st.sidebar.header("Database")
 st.sidebar.markdown("## Navigation")
 
 page = st.sidebar.radio(
@@ -413,16 +386,6 @@ for table in tables:
         st.caption(f"Rows: {count}")
 
 # =========================================================
-# QUERY HISTORY
-# =========================================================
-
-st.sidebar.header("Query History")
-history_log = load_history()
-for item in history_log:
-    with st.sidebar.expander(item["time"]):
-        st.code(item["query"], language="sql")
-
-# =========================================================
 # PAGE 1: SHOW SAMPLE DATA (PERSISTED - FIXED LAG)
 # =========================================================
 
@@ -446,7 +409,7 @@ if page == "🛢️ Table List":
         if st.session_state.selected_table_tab in options:
             default_idx = options.index(st.session_state.selected_table_tab)
 
-        # FIX: Directly mapping the key parameter forces instant single-click rendering
+        # Directly mapping the key parameter forces instant single-click rendering
         selected_table = st.selectbox(
             "Choose a Table to View Data",
             options,
@@ -566,9 +529,6 @@ if page == "🔍 AI Testing":
                         df_run = pd.DataFrame(data, columns=columns)
                         end_time = time.time()
                         execution_time = round(end_time - start_time, 4)
-
-                        clean_sql = sql.replace("\r", "").strip()
-                        save_history(clean_sql)
 
                         status = "PASS" if len(df_run) == 0 else "FAIL"
 
@@ -702,9 +662,6 @@ if page == "📊 Ask Reporting":
                     st.subheader("Data Summary View")
                     st.dataframe(df, width='stretch')
 
-                    clean_sql = sql_query.replace("\r", "").strip()
-                    save_history(clean_sql)
-
                     fig = create_chart(df)
                     if fig:
                         st.plotly_chart(fig, width='stretch')
@@ -778,7 +735,6 @@ if page == "📝 SQL Runner":
 
                 end_time = time.time()
                 execution_time = round(end_time - start_time, 4)
-                save_history(query.replace("\r", "").strip())
 
                 st.session_state.runner_execution_cache = {
                     "tabs": computed_tabs,
