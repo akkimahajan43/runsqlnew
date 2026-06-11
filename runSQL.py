@@ -6,7 +6,7 @@ from io import BytesIO
 from datetime import datetime
 
 import httpx
-import openpyxl as px
+import plotly.express as px
 import pandas as pd
 import pyodbc
 import sqlalchemy
